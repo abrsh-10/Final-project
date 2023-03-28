@@ -1,0 +1,3 @@
+notes on project
+1.to add "mark as seen to feedbacks"
+2.to map dates between angular and spring
