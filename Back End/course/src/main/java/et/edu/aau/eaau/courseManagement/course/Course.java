@@ -14,6 +14,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Builder
 public class Course {
     @Id
+    private String id;
     private String courseId;
     private String courseName;
     private String courseDescription;

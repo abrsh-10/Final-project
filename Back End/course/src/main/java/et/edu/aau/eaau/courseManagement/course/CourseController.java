@@ -37,27 +37,27 @@ public class CourseController {
             return new ResponseEntity(courseService.getAllCoursesWithFullInformation(), HttpStatus.OK);
         }
     }
-    @GetMapping("/courseid/{courseId}")
-    public ResponseEntity<Course> getCourse(@PathVariable("courseId") String courseId) {
-        if (courseService.getCourse(courseId) == null) {
+    @GetMapping("/id/{id}")
+    public ResponseEntity<Course> getCourse(@PathVariable("id") String id) {
+        if (courseService.getCourse(id) == null) {
             System.out.println("course not found");
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         } else {
-            return new ResponseEntity(courseService.getCourse(courseId), HttpStatus.OK);
+            return new ResponseEntity(courseService.getCourse(id), HttpStatus.OK);
         }
     }
-    @GetMapping("/course-with-full-information/courseid/{courseId}")
-    public ResponseEntity<CourseDto> getCourseWithFullInformation(@PathVariable("courseId") String courseId) {
-        if (courseService.getCourseWithFullInformation(courseId) == null) {
+    @GetMapping("/course-with-full-information/id/{id}")
+    public ResponseEntity<CourseDto> getCourseWithFullInformation(@PathVariable("id") String id) {
+        if (courseService.getCourseWithFullInformation(id) == null) {
             System.out.println("course not found");
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         } else {
-            return new ResponseEntity(courseService.getCourseWithFullInformation(courseId), HttpStatus.OK);
+            return new ResponseEntity(courseService.getCourseWithFullInformation(id), HttpStatus.OK);
         }
     }
-    @PutMapping("description/{courseId}")
-    public ResponseEntity changeCourseDescription(@PathVariable("courseId") String courseId,@RequestBody String newDescription) {
-        boolean ischanged = courseService.changeCourseDescription(courseId,newDescription);
+    @PutMapping("description/{id}")
+    public ResponseEntity changeCourseDescription(@PathVariable("id") String id, @RequestBody String newDescription) {
+        boolean ischanged = courseService.changeCourseDescription(id,newDescription);
         if(!ischanged){
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }

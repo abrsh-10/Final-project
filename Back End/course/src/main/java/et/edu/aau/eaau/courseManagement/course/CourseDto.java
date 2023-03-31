@@ -14,6 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class CourseDto {
+    private String id;
     private String courseId;
     private String courseName;
     private String courseDescription;

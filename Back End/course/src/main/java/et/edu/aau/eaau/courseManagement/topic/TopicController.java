@@ -13,14 +13,14 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:4200")
 public class TopicController {
     private final TopicService topicService;
-    @GetMapping("course-id/{courseId}")
+    @GetMapping("id/{courseId}")
     public ResponseEntity<List<Topic>> getAllTopics(@PathVariable String courseId){
         if(topicService.getAllTopics(courseId) != null){
             return new ResponseEntity(topicService.getAllTopics(courseId), HttpStatus.OK);
         }
         return new ResponseEntity(null, HttpStatus.NOT_FOUND);
     }
-    @GetMapping("/topic-with-lessons/course-id/{courseId}")
+    @GetMapping("/topic-with-lessons/id/{courseId}")
     public ResponseEntity<List<Topic>> getAllTopicsWithLessons(@PathVariable String courseId){
         if(topicService.getAllTopicsWithLessons(courseId) != null){
             return new ResponseEntity(topicService.getAllTopicsWithLessons(courseId), HttpStatus.OK);

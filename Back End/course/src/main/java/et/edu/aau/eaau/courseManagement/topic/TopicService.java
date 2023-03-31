@@ -17,7 +17,7 @@ public class TopicService {
     private final LessonService lessonService;
 
     public boolean createTopic(TopicDto topicDto) {
-        if(courseRepository.findByCourseId(topicDto.getCourseId()).isPresent()){
+        if(courseRepository.findById(topicDto.getCourseId()).isPresent()){
             Topic topic = Topic.builder()
                     .topicTitle(topicDto.getTopicTitle())
                     .topicDescription(topicDto.getTopicDescription())

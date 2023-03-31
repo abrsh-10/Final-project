@@ -33,8 +33,8 @@ public class CourseService {
         return courses.stream().map(this::mapToCourseDto).toList();
     }
 
-    public Course getCourse(String courseId) {
-        Optional<Course> optionalCourse = courseRepository.findByCourseId(courseId);
+    public Course getCourse(String id) {
+        Optional<Course> optionalCourse = courseRepository.findById(id);
         if (optionalCourse.isPresent()) {
 
             Course course = optionalCourse.get();
@@ -44,8 +44,8 @@ public class CourseService {
             return null;
         }
     }
-    public CourseDto getCourseWithFullInformation(String courseId) {
-        Optional<Course> optionalCourse = courseRepository.findByCourseId(courseId);
+    public CourseDto getCourseWithFullInformation(String id) {
+        Optional<Course> optionalCourse = courseRepository.findById(id);
         if (optionalCourse.isPresent()) {
 
             Course course = optionalCourse.get();
@@ -55,8 +55,8 @@ public class CourseService {
             return null;
         }
     }
-    public boolean changeCourseDescription(String courseId,String newDescription){
-        Optional<Course> optionalCourse = courseRepository.findByCourseId(courseId);
+    public boolean changeCourseDescription(String id,String newDescription){
+        Optional<Course> optionalCourse = courseRepository.findById(id);
         if (optionalCourse.isPresent()) {
 
             Course course = optionalCourse.get();
@@ -69,11 +69,12 @@ public class CourseService {
     }
     private CourseDto mapToCourseDto(Course course) {
         CourseDto courseDto = CourseDto.builder()
+                .id(course.getId())
                 .courseId(course.getCourseId())
                 .courseName(course.getCourseName())
                 .courseDescription(course.getCourseDescription())
                 .build();
-        courseDto.setTopics(topicService.getAllTopicsWithLessons(courseDto.getCourseId()));
+        courseDto.setTopics(topicService.getAllTopicsWithLessons(courseDto.getId()));
         return courseDto;
     }
 }
