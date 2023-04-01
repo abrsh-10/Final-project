@@ -14,7 +14,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class FeedbackService {
     private final FeedbackRepository feedbackRepository;
-    private  final RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
 
     public boolean addFeedback(FeedbackRequest feedbackRequest) {
         ResponseEntity<String> responseEntity;

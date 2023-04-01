@@ -16,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -86,6 +87,16 @@ public class FileService {
     public List<FileInformation> getAllFileInformations(){
         List<FileInformation> fileInformations = fileInformationRepository.findAll();
         return fileInformations;
+    }
+    public List<FileInformation> getAllCourseMaterials(String course_id){
+        List<FileInformation> fileInformations = fileInformationRepository.findAll();
+        List<FileInformation> courseMaterials = new ArrayList<>();
+        for(FileInformation fileInformation:fileInformations){
+            if(fileInformation.getFileType().equals(coursematerial)&&fileInformation.getCourse_id().equals(course_id)){
+                courseMaterials.add(fileInformation);
+            }
+        }
+        return courseMaterials;
     }
     public FileInformation getFileInformation(String id){
         Optional<FileInformation> optionalFileInformation = fileInformationRepository.findById(id);

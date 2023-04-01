@@ -17,10 +17,14 @@ public class FileInformation {
     private String fileId;
     @Field("filename")
     private String fileName;
+    @Field("length")
+    private int length;
+    @Field("metadata.info.fileType")
+    private Type fileType;
     @Field("metadata.info.uploader")
     private String uploader;
     @Field("metadata.info.description")
     private String Description;
-    @Field("metadata.info.fileType")
-    private Type fileType;
+    @Field("metadata.info.course_id")
+    private String course_id;
 }

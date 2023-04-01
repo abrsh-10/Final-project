@@ -24,13 +24,15 @@ public class FileController {
     public ResponseEntity<?> upload(@RequestParam("file")MultipartFile file,
                                     @RequestParam("filetype") String type,
                                     @RequestParam("uploader") String uploader,
-                                    @RequestParam("description") String description) throws IOException {
+                                    @RequestParam("description") String description,
+                                    @RequestParam("course_id") String course_id) throws IOException {
         if(type.equals("coursematerial") || type.equals("assignment") || type.equals("solution")) {
 
             MetaData metaData = MetaData.builder().
                     fileType(Type.valueOf(type))
                     .uploader(uploader)
-                    .description(description).
+                    .description(description)
+                    .course_id(course_id).
                     build();
             if(fileService.addFile(file,metaData) == 0)
             return new ResponseEntity<>("file with file name: "+ file.getOriginalFilename() + " is added successfully", HttpStatus.OK);
@@ -59,6 +61,10 @@ public class FileController {
     @GetMapping("/viewfileinformation")
     public  ResponseEntity<List<FileInformation>> getAllFileNames(){
         return new ResponseEntity<>(fileService.getAllFileInformations(),HttpStatus.OK);
+    }
+    @GetMapping("/view-course-materials/{course_id}")
+    public  ResponseEntity<List<FileInformation>> getAllCoursematerials(@PathVariable String course_id){
+        return new ResponseEntity<>(fileService.getAllCourseMaterials(course_id),HttpStatus.OK);
     }
     @GetMapping("/viewfileinformation/{fileId}")
     public  ResponseEntity<FileInformation> getAllFileNames(@PathVariable("fileId") String fileId){
