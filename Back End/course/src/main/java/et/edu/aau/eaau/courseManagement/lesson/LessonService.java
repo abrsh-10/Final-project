@@ -59,7 +59,7 @@ public class LessonService {
         }
         return false;
     }
-    public boolean deleteTopic(String lessonId){
+    public boolean deleteLesson(String lessonId){
         Optional<Lesson> optionalLesson = lessonRepository.findById(lessonId);
         if(optionalLesson.isPresent()){
             lessonRepository.deleteById(lessonId);

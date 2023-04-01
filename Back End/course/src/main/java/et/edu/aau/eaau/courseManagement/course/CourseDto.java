@@ -18,7 +18,6 @@ public class CourseDto {
     private String courseId;
     private String courseName;
     private String courseDescription;
-
-//    private List<CourseMaterial> courseMaterials;
+    private List<CourseMaterial> courseMaterials;
     private List<TopicResponse> topics;
 }

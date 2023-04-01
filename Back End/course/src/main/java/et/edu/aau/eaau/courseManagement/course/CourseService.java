@@ -1,6 +1,7 @@
 package et.edu.aau.eaau.courseManagement.course;
 
 
+import et.edu.aau.eaau.courseManagement.courseMaterial.CourseMaterialService;
 import et.edu.aau.eaau.courseManagement.topic.TopicService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import java.util.Optional;
 public class CourseService {
     private final CourseRepository courseRepository;
     private final TopicService topicService;
+    private final CourseMaterialService courseMaterialService;
 
     public void createCourse(Course course) {
         courseRepository.save(course);
@@ -74,6 +76,7 @@ public class CourseService {
                 .courseName(course.getCourseName())
                 .courseDescription(course.getCourseDescription())
                 .build();
+        courseDto.setCourseMaterials(courseMaterialService.getCourseMaterials(courseDto.getId()));
         courseDto.setTopics(topicService.getAllTopicsWithLessons(courseDto.getId()));
         return courseDto;
     }

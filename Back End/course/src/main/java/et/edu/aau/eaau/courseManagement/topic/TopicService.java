@@ -71,6 +71,8 @@ public class TopicService {
     public boolean deleteTopic(String topicId){
         Optional<Topic> optionalTopic = topicRepository.findById(topicId);
         if(optionalTopic.isPresent()){
+            List<Lesson> lessons = lessonService.getAllLessons(topicId);
+            lessons.forEach(lesson -> lessonService.deleteLesson(lesson.getLessonId()));
             topicRepository.deleteById(topicId);
             return true;
         }

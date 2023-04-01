@@ -4,18 +4,24 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CourseMaterial {
-    private String courseMaterialId;
-    private String courseMaterialName;
-    private int courseMaterialSize;
-    private String courseMaterialDescription;
-    private String courseId;
+public class File {
 
+    private String fileId;
+
+    private String fileName;
+
+    private int length;
+
+    private String uploader;
+
+    private String Description;
+
+    private String course_id;
 }
