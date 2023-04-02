@@ -15,7 +15,7 @@ public class LessonService {
     private final LessonRepository lessonRepository;
   private final TopicRepository topicRepository;
     public boolean createLesson(LessonDto lessonDto){
-        if(topicRepository.findByCourseId(lessonDto.getTopicId()).isPresent()) {
+        if(topicRepository.findById(lessonDto.getTopicId()).isPresent()) {
             Lesson lesson = Lesson.builder()
                     .lessonTitle(lessonDto.getLessonTitle())
                     .lessonDescription(lessonDto.getLessonDescription())

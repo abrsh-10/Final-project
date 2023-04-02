@@ -5,7 +5,6 @@ import com.mongodb.DBObject;
 import com.mongodb.client.gridfs.model.GridFSFile;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.gridfs.GridFsOperations;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
@@ -23,6 +22,8 @@ import java.util.Optional;
 import static et.edu.aau.eaau.file.Role.Student;
 import static et.edu.aau.eaau.file.Role.Teacher;
 import static et.edu.aau.eaau.file.Type.*;
+import static org.springframework.data.mongodb.core.query.Criteria.where;
+import static org.springframework.data.mongodb.core.query.Query.query;
 
 
 @Service
@@ -39,14 +40,16 @@ public class FileService {
     private RestTemplate restTemplate;
 
     public int addFile(MultipartFile upload, MetaData data) throws IOException {
-        ResponseEntity<UserResponse> responseEntity;
+        ResponseEntity<UserResponse> responseEntity1;
+        ResponseEntity<Course> responseEntity2;
         try {
-             responseEntity = restTemplate.getForEntity("http://localhost:8080/api/user/email/"+data.getUploader(),UserResponse.class);
+             responseEntity1 = restTemplate.getForEntity("http://localhost:8080/api/user/email/"+data.getUploader(),UserResponse.class);
+             responseEntity2 = restTemplate.getForEntity("http://localhost:8083/api/course/id/"+data.getCourse_id(),Course.class);
         } catch (HttpClientErrorException e) {
             return 1;
         }
-        if(responseEntity.getStatusCodeValue() == 200){
-            Role role = responseEntity.getBody().getRole();
+        if(responseEntity1.getStatusCodeValue() == 200){
+            Role role = responseEntity1.getBody().getRole();
             if(((role == Student) && (data.getFileType() == solution)) ||
                     ((role == Teacher) && ((data.getFileType() == assignment) || (data.getFileType() == coursematerial))))
             {
@@ -69,7 +72,7 @@ public class FileService {
 
     public File downloadFile(String id) throws IOException {
 
-        GridFSFile gridFSFile = template.findOne( new Query(Criteria.where("_id").is(id)) );
+        GridFSFile gridFSFile = template.findOne( new Query(where("_id").is(id)) );
 
         File file = new File();
 
@@ -105,6 +108,13 @@ public class FileService {
             return fileInformation;
         }
         return null;
+    }
+    public boolean deleteFile(String fileId){
+        if(getFileInformation(fileId)==null){
+            return false;
+        }
+        template.delete(query(where("_id").is(fileId)));
+        return true;
     }
 
 }

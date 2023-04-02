@@ -37,7 +37,7 @@ public class FileController {
             if(fileService.addFile(file,metaData) == 0)
             return new ResponseEntity<>("file with file name: "+ file.getOriginalFilename() + " is added successfully", HttpStatus.OK);
             else if (fileService.addFile(file,metaData) == 1) {
-                return new ResponseEntity<>("uploader could not be found in the users list",HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>("either uploader or course could not be found",HttpStatus.NOT_FOUND);
             } else if (fileService.addFile(file,metaData) == 2) {
                 return new ResponseEntity<>("sorry you cannot upload such type of file because of your role",HttpStatus.BAD_REQUEST);
             }
@@ -70,6 +70,12 @@ public class FileController {
     public  ResponseEntity<FileInformation> getAllFileNames(@PathVariable("fileId") String fileId){
         if(fileService.getFileInformation(fileId)!=null)
             return new ResponseEntity<>(fileService.getFileInformation(fileId),HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+    @DeleteMapping("/delete/{fileId}")
+    public  ResponseEntity deleteFile(@PathVariable("fileId") String fileId){
+        if(fileService.deleteFile(fileId))
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 

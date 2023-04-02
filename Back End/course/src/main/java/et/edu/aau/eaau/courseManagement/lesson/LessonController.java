@@ -37,8 +37,8 @@ public class LessonController {
     }
     @PutMapping("lesson-description/{lessonId}")
     public ResponseEntity changeTopicDescription(@PathVariable("lessonId") String lessonId,@RequestBody String newDescription) {
-        boolean ischanged = lessonService.changeDescription(lessonId,newDescription);
-        if(!ischanged){
+        boolean isChanged = lessonService.changeDescription(lessonId,newDescription);
+        if(!isChanged){
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
         else

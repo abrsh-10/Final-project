@@ -1,3 +1,7 @@
 notes on project
-1.to add "mark as seen to feedbacks"
-2.to map dates between angular and spring
+1.to add "mark as seen to feedbacks"//done
+2.to map dates between angular and spring//done
+3.to check whether a course exists when uploading a file//done
+4.to remove all 4XX response entitys
+5.to delete a file by id in gridfs //done
+6.to expose models from a service rather than copy pasting
