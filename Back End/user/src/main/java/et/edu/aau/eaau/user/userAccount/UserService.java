@@ -39,7 +39,7 @@ public class UserService {
         List<User> users = userRepository.findAll();
         if (users.size() == 0)
             return null;
-        return users.stream().map(this::mapToUser).toList();
+        return users;
 
     }
 
@@ -49,7 +49,7 @@ public class UserService {
 
             User user = optionalUser.get();
 
-            return mapToUser(user);
+            return user;
         } else {
             return null;
         }
@@ -151,7 +151,7 @@ public class UserService {
         }
         User user = userRepository.findUsersByEmail(email).get();
         List<String> ids = user.getCourses();
-        List<String> courseIds = getUser(email).getCourses();
+        List<String> courseIds = mapToUser(getUser(email)).getCourses();
         if(courseIds.contains(responseEntity.getBody().getCourseId())){
             return 7;
         }
