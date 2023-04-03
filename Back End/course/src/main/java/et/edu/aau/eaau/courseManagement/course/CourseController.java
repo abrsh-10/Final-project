@@ -46,6 +46,14 @@ public class CourseController {
             return new ResponseEntity(courseService.getCourse(id), HttpStatus.OK);
         }
     }
+    @GetMapping("/course-id/{courseId}")
+    public ResponseEntity<Course> getCourseByCourseId(@PathVariable("courseId") String courseId) {
+        if (courseService.getCourseByCourseId(courseId) == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity(courseService.getCourseByCourseId(courseId), HttpStatus.OK);
+        }
+    }
     @GetMapping("/course-with-full-information/id/{id}")
     public ResponseEntity<CourseDto> getCourseWithFullInformation(@PathVariable("id") String id) {
         if (courseService.getCourseWithFullInformation(id) == null) {
@@ -58,6 +66,15 @@ public class CourseController {
     @PutMapping("description/{id}")
     public ResponseEntity changeCourseDescription(@PathVariable("id") String id, @RequestBody String newDescription) {
         boolean ischanged = courseService.changeCourseDescription(id,newDescription);
+        if(!ischanged){
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+        else
+            return new ResponseEntity(null, HttpStatus.NO_CONTENT);
+    }
+    @PutMapping("teacher/{id}")
+    public ResponseEntity changeTeacher(@PathVariable("id") String id, @RequestBody String newEmail) {
+        boolean ischanged = courseService.changeTeacher(id,newEmail);
         if(!ischanged){
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }

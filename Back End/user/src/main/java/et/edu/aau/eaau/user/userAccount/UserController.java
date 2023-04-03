@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -109,20 +110,20 @@ public class UserController {
         }
     }
     @PutMapping("add-course/{email}/{course_id}")
-    public ResponseEntity<String> addCourse(@PathVariable("email") String email,@PathVariable String course_id) {
-        if(userService.assignCourses(email, course_id) == 0)
+    public ResponseEntity<String> addCourse(@PathVariable("email") String email, @PathVariable String course_id,@Nullable @RequestBody String teacherEmail) {
+        if(userService.assignCourses(email, course_id,teacherEmail) == 0)
        return new ResponseEntity<>("course added",HttpStatus.OK);
-        if(userService.assignCourses(email, course_id) == 1)
+        if(userService.assignCourses(email, course_id,teacherEmail) == 1)
             return new ResponseEntity<>("user not found",HttpStatus.NOT_FOUND);
-        if(userService.assignCourses(email, course_id) == 2)
+        if(userService.assignCourses(email, course_id,teacherEmail) == 2)
             return new ResponseEntity<>("user not allowed",HttpStatus.BAD_REQUEST);
-        if(userService.assignCourses(email, course_id) == 4)
-            return new ResponseEntity<>("course already assigned to a teacher",HttpStatus.BAD_REQUEST);
-        if(userService.assignCourses(email, course_id) == 5)
+        if(userService.assignCourses(email, course_id,teacherEmail) == 4)
+            return new ResponseEntity<>("course already assigned to the user",HttpStatus.BAD_REQUEST);
+        if(userService.assignCourses(email, course_id,teacherEmail) == 5)
             return new ResponseEntity<>("cannot assign a course to a student before assigning to a teacher",HttpStatus.BAD_REQUEST);
-        if(userService.assignCourses(email, course_id) == 6)
+        if(userService.assignCourses(email, course_id,teacherEmail) == 6)
             return new ResponseEntity<>("course id is not valid",HttpStatus.BAD_REQUEST);
-        if(userService.assignCourses(email, course_id) == 7)
+        if(userService.assignCourses(email, course_id,teacherEmail) == 7)
             return new ResponseEntity<>("course id already assigned to this user",HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>("user is an admin",HttpStatus.BAD_REQUEST);
     }

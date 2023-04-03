@@ -46,6 +46,17 @@ public class CourseService {
             return null;
         }
     }
+    public List<Course> getCourseByCourseId(String courseId) {
+        Optional<List<Course>> optionalCourse = courseRepository.findByCourseId(courseId);
+        if (optionalCourse.get().size()>0) {
+
+            List<Course> courses = optionalCourse.get();
+
+            return courses;
+        } else {
+            return null;
+        }
+    }
     public CourseDto getCourseWithFullInformation(String id) {
         Optional<Course> optionalCourse = courseRepository.findById(id);
         if (optionalCourse.isPresent()) {
@@ -69,12 +80,24 @@ public class CourseService {
             return false;
         }
     }
+    public boolean changeTeacher(String id,String newEmail){
+        Optional<Course> optionalCourse = courseRepository.findById(id);
+        if (optionalCourse.isPresent()) {
+            Course course = optionalCourse.get();
+            course.setTeacherEmail(newEmail);
+            courseRepository.save(course);
+            return true;
+        } else {
+            return false;
+        }
+    }
     private CourseDto mapToCourseDto(Course course) {
         CourseDto courseDto = CourseDto.builder()
                 .id(course.getId())
                 .courseId(course.getCourseId())
                 .courseName(course.getCourseName())
                 .courseDescription(course.getCourseDescription())
+                .teacherEmail(course.getTeacherEmail())
                 .build();
         courseDto.setCourseMaterials(courseMaterialService.getCourseMaterials(courseDto.getId()));
         courseDto.setTopics(topicService.getAllTopicsWithLessons(courseDto.getId()));

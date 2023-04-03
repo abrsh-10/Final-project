@@ -10,6 +10,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,7 +40,7 @@ public class UserService {
         List<User> users = userRepository.findAll();
         if (users.size() == 0)
             return null;
-        return users.stream().map(this::mapToUser).toList();
+        return users;
 
     }
 
@@ -49,7 +50,7 @@ public class UserService {
 
             User user = optionalUser.get();
 
-            return mapToUser(user);
+            return user;
         } else {
             return null;
         }
@@ -107,55 +108,70 @@ public class UserService {
         return false;
     }
 
-    public int assignCourses(String email, String course_id) {
-        if (getUser(email) == null) {
+    public int assignCourses(String email, String courseId,String teacherEmail) {
+        User user = getUser(email);
+        if (user == null) {
             return 1;
         }
 
-        if (!getUser(email).getIsAllowed()) {
+        if (!user.getIsAllowed()) {
             return 2;
         }
 
-        if (getUser(email).getRole() == Role.Admin) {
+        if (user.getRole() == Role.Admin) {
             return 3;
         }
-        ResponseEntity<Course> responseEntity;
+        ResponseEntity<Course[]> responseEntity;
         try {
-            responseEntity = restTemplate.getForEntity("http://localhost:8083/api/course/id/"+course_id,Course.class);
+            responseEntity = restTemplate.getForEntity("http://localhost:8083/api/course/course-id/"+ courseId,Course[].class);
+
         } catch (HttpClientErrorException e) {
             return 6;
         }
-
+        List<Course> courseList = Arrays.stream(responseEntity.getBody()).toList();
         if (getUser(email).getRole() == Role.Teacher) {
-            List<User> teachers = getUsersbyRole(Role.Teacher);
-            for (User teacher : teachers) {
-                List<String> courses = teacher.getCourses();
-                if(courses.contains(course_id)){
-                    return 4;
-                }
-            }
-        }
-        if (getUser(email).getRole() == Role.Student) {
-            boolean isTeacherAssigned = false;
-            List<User> teachers = getUsersbyRole(Role.Teacher);
-            for (User teacher : teachers) {
-                List<String> courses = teacher.getCourses();
-                if(courses.contains(course_id)){
-                    isTeacherAssigned = true;
+            boolean isAssigned = false;
+            for(Course course:courseList){
+                if(course.getTeacherEmail().equals(email)){
+                    isAssigned = true;
+                    System.out.println("gff");
                     break;
                 }
             }
-            if(!isTeacherAssigned){
+            if(isAssigned){
+                return 4;
+            }
+            if(courseList.size() == 1 && courseList.get(0).getTeacherEmail()==null){
+                restTemplate.put("http://localhost:8083/api/course/teacher/"+courseList.get(0).getId(),getUser(email).getEmail());
+            }
+            else{
+                Course course = Course.builder()
+                        .courseId(courseList.get(0).getCourseId())
+                        .courseName(courseList.get(0).getCourseName())
+                        .courseDescription(courseList.get(0).getCourseDescription())
+                        .teacherEmail(getUser(email).getEmail())
+                        .build();
+                restTemplate.postForEntity("http://localhost:8083/api/course",course,Course.class);
+            }
+            return 0;
+        }
+        if (getUser(email).getRole() == Role.Student) {
+            if(user.getCourses().contains(courseId)){
+                return 4;
+            }
+            boolean valid = false;
+            for (Course course : courseList) {
+                if((course.getCourseId().equals(courseId) && course.getTeacherEmail().equals(teacherEmail))){
+                    valid = true;
+                    break;
+                }
+            }
+            if(!valid){
                 return 5;
             }
         }
-        User user = userRepository.findUsersByEmail(email).get();
         List<String> ids = user.getCourses();
-        List<String> courseIds = getUser(email).getCourses();
-        if(courseIds.contains(responseEntity.getBody().getCourseId())){
-            return 7;
-        }
-        ids.add(course_id);
+        ids.add(courseId);
         user.setCourses(ids);
         userRepository.save(user);
         return 0;
