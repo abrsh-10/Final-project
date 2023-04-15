@@ -9,10 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -124,24 +121,25 @@ public class UserService {
         ResponseEntity<Course[]> responseEntity;
         try {
             responseEntity = restTemplate.getForEntity("http://localhost:8083/api/course/course-id/"+ courseId,Course[].class);
-
-        } catch (HttpClientErrorException e) {
+        }
+        catch (HttpClientErrorException e) {
             return 6;
         }
-        List<Course> courseList = Arrays.stream(responseEntity.getBody()).toList();
+        List<Course> courseList = Arrays.stream(Objects.requireNonNull(responseEntity.getBody())).toList();
         if (getUser(email).getRole() == Role.Teacher) {
             boolean isAssigned = false;
             for(Course course:courseList){
                 if(course.getTeacherEmail().equals(email)){
                     isAssigned = true;
-                    System.out.println("gff");
                     break;
                 }
             }
             if(isAssigned){
                 return 4;
             }
-            if(courseList.size() == 1 && courseList.get(0).getTeacherEmail()==null){
+            System.out.println(courseList.size()+courseList.get(0).getTeacherEmail());
+            if(courseList.size() == 1 && Objects.equals(courseList.get(0).getTeacherEmail(), "none")){
+
                 restTemplate.put("http://localhost:8083/api/course/teacher/"+courseList.get(0).getId(),getUser(email).getEmail());
             }
             else{

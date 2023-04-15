@@ -16,7 +16,13 @@ public class CourseService {
     private final TopicService topicService;
     private final CourseMaterialService courseMaterialService;
 
-    public void createCourse(Course course) {
+    public void createCourse(CourseRequest courseRequest) {
+        Course course = Course.builder()
+                .courseId(courseRequest.getCourseId())
+                .courseName(courseRequest.getCourseName())
+                .courseDescription(courseRequest.getCourseDescription())
+                .teacherEmail("none")
+                .build();
         courseRepository.save(course);
     }
 

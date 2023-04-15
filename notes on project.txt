@@ -6,3 +6,5 @@ notes on project
 5.to delete a file by id in gridfs //done
 6.to expose models from a service rather than copy pasting
 7.to make request body nullable for assigncourse endpoint
+8.to change isActive attribute automatically
+9.to check if uploader of an assignment or exam is the teacher assigned for the course id specified

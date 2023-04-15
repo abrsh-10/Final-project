@@ -14,15 +14,15 @@ import java.util.List;
 public class CourseController {
     private final CourseService courseService;
     @PostMapping()
-    ResponseEntity createCourse(@RequestBody Course course){
-        if(courseService.getCourse(course.getCourseId())==null) {
-            courseService.createCourse(course);
+    ResponseEntity createCourse(@RequestBody CourseRequest courseRequest){
+        if(courseService.getCourse(courseRequest.getCourseId())==null) {
+            courseService.createCourse(courseRequest);
             return new ResponseEntity<>(null, HttpStatus.CREATED);
         }
         return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
     }
     @GetMapping()
-    public ResponseEntity<List<Course>> getAllUsers() {
+    public ResponseEntity<List<Course>> getAllCourses() {
         if (courseService.getAllCourses() == null) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         } else {
@@ -39,13 +39,8 @@ public class CourseController {
     }
     @GetMapping("/id/{id}")
     public ResponseEntity<Course> getCourse(@PathVariable("id") String id) {
-        if (courseService.getCourse(id) == null) {
-            System.out.println("course not found");
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        } else {
             return new ResponseEntity(courseService.getCourse(id), HttpStatus.OK);
         }
-    }
     @GetMapping("/course-id/{courseId}")
     public ResponseEntity<Course> getCourseByCourseId(@PathVariable("courseId") String courseId) {
         if (courseService.getCourseByCourseId(courseId) == null) {

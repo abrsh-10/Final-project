@@ -66,6 +66,10 @@ public class FileController {
     public  ResponseEntity<List<FileInformation>> getAllCoursematerials(@PathVariable String course_id){
         return new ResponseEntity<>(fileService.getAllCourseMaterials(course_id),HttpStatus.OK);
     }
+    @GetMapping("/view-assignments/{course_id}")
+    public  ResponseEntity<List<FileInformation>> getAllAssignments(@PathVariable String course_id){
+        return new ResponseEntity<>(fileService.getAllAssignments(course_id),HttpStatus.OK);
+    }
     @GetMapping("/viewfileinformation/{fileId}")
     public  ResponseEntity<FileInformation> getAllFileNames(@PathVariable("fileId") String fileId){
         if(fileService.getFileInformation(fileId)!=null)

@@ -40,12 +40,7 @@ public class UserController {
 
     @GetMapping("/email/{email}")
     public ResponseEntity<User> getUser(@PathVariable("email") String email) {
-        if (userService.getUser(email) == null) {
-            System.out.println("user not found");
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        } else {
             return new ResponseEntity(userService.getUser(email), HttpStatus.OK);
-        }
     }
     @GetMapping("/role/{role}")
     public ResponseEntity<List<User>> getUsersbyRole(@PathVariable("role") Role role) {
@@ -110,7 +105,7 @@ public class UserController {
         }
     }
     @PutMapping("add-course/{email}/{course_id}")
-    public ResponseEntity<String> addCourse(@PathVariable("email") String email, @PathVariable String course_id,@Nullable @RequestBody String teacherEmail) {
+    public ResponseEntity<String> addCourse(@PathVariable("email") String email, @PathVariable String course_id,@RequestParam(name = "teacherEmail", required = false) String teacherEmail) {
         if(userService.assignCourses(email, course_id,teacherEmail) == 0)
        return new ResponseEntity<>("course added",HttpStatus.OK);
         if(userService.assignCourses(email, course_id,teacherEmail) == 1)
@@ -125,6 +120,8 @@ public class UserController {
             return new ResponseEntity<>("course id is not valid",HttpStatus.BAD_REQUEST);
         if(userService.assignCourses(email, course_id,teacherEmail) == 7)
             return new ResponseEntity<>("course id already assigned to this user",HttpStatus.BAD_REQUEST);
+        if(userService.assignCourses(email, course_id,teacherEmail) == 8)
+            return new ResponseEntity<>("could not contact course service",HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>("user is an admin",HttpStatus.BAD_REQUEST);
     }
     @PutMapping("remove-course/{email}/{course_id}")

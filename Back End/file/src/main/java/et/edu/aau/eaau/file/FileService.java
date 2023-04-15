@@ -45,6 +45,9 @@ public class FileService {
         try {
              responseEntity1 = restTemplate.getForEntity("http://localhost:8080/api/user/email/"+data.getUploader(),UserResponse.class);
              responseEntity2 = restTemplate.getForEntity("http://localhost:8083/api/course/id/"+data.getCourse_id(),Course.class);
+             if(responseEntity1.getBody() == null || responseEntity2.getBody() == null){
+                 return 1;
+             }
         } catch (HttpClientErrorException e) {
             return 1;
         }
@@ -100,6 +103,16 @@ public class FileService {
             }
         }
         return courseMaterials;
+    }
+    public List<FileInformation> getAllAssignments(String course_id){
+        List<FileInformation> fileInformations = fileInformationRepository.findAll();
+        List<FileInformation> assignments = new ArrayList<>();
+        for(FileInformation fileInformation:fileInformations){
+            if(fileInformation.getFileType().equals(assignment)&&fileInformation.getCourse_id().equals(course_id)){
+                assignments.add(fileInformation);
+            }
+        }
+        return assignments;
     }
     public FileInformation getFileInformation(String id){
         Optional<FileInformation> optionalFileInformation = fileInformationRepository.findById(id);
