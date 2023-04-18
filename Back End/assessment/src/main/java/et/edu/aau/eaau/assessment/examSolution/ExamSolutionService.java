@@ -77,4 +77,14 @@ List<String> ids = userResponseEntity.getBody().getCourses();
          }
         return filteredExamSolutions;
     }
+    public Boolean markSeen(String id){
+        Optional<ExamSolution> optionalExamSolution = examSolutionRepository.findById(id);
+        if(optionalExamSolution.isPresent()) {
+            ExamSolution examSolution = optionalExamSolution.get();
+            examSolution.setSeen(true);
+            examSolutionRepository.save(examSolution);
+            return true;
+        }
+        return false;
+    }
 }

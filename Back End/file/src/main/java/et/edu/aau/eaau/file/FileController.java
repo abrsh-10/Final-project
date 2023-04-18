@@ -36,6 +36,9 @@ public class FileController {
                     build();
             if(fileService.addFile(file,metaData) == 0)
             return new ResponseEntity<>("file with file name: "+ file.getOriginalFilename() + " is added successfully", HttpStatus.OK);
+            else if (fileService.addFile(file,metaData) == 1 && metaData.getFileType() == Type.solution) {
+                return new ResponseEntity<>("assignment could not be found",HttpStatus.NOT_FOUND);
+            }
             else if (fileService.addFile(file,metaData) == 1) {
                 return new ResponseEntity<>("either uploader or course could not be found",HttpStatus.NOT_FOUND);
             } else if (fileService.addFile(file,metaData) == 2) {
@@ -70,11 +73,13 @@ public class FileController {
     public  ResponseEntity<List<FileInformation>> getAllAssignments(@PathVariable String course_id){
         return new ResponseEntity<>(fileService.getAllAssignments(course_id),HttpStatus.OK);
     }
+    @GetMapping("/view-solutions/{assignment_id}")
+    public  ResponseEntity<List<FileInformation>> getAllSolutions(@PathVariable String assignment_id){
+        return new ResponseEntity<>(fileService.getAllSolutions(assignment_id),HttpStatus.OK);
+    }
     @GetMapping("/viewfileinformation/{fileId}")
     public  ResponseEntity<FileInformation> getAllFileNames(@PathVariable("fileId") String fileId){
-        if(fileService.getFileInformation(fileId)!=null)
             return new ResponseEntity<>(fileService.getFileInformation(fileId),HttpStatus.OK);
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
     @DeleteMapping("/delete/{fileId}")
     public  ResponseEntity deleteFile(@PathVariable("fileId") String fileId){

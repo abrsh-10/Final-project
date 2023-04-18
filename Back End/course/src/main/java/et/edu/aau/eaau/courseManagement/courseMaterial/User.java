@@ -1,4 +1,4 @@
-package et.edu.aau.eaau.assessment.examSolution;
+package et.edu.aau.eaau.courseManagement.courseMaterial;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,15 +12,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@Document(value = "users")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class User {
+    @Id
     private String id;
     private String firstName;
     private String lastName;
-    private Role role;
+    @Indexed(unique = true)
     private String email;
+    private Role role;
     private Boolean isAllowed;
     private List<String> courses = new ArrayList<>();
 }

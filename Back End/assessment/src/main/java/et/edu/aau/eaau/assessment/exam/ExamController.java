@@ -33,6 +33,9 @@ public class ExamController {
         if(response == 5){
             return new ResponseEntity<>("sorry could not contact course microservice to check whether course exists or not ", HttpStatus.INTERNAL_SERVER_ERROR);
         }
+        if(response == 6){
+            return new ResponseEntity<>("creator is not teacher assigned for the course", HttpStatus.BAD_REQUEST);
+        }
             return new ResponseEntity<>(null, HttpStatus.CREATED);
     }
     @GetMapping()

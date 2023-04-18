@@ -41,7 +41,7 @@ public class FeedbackController {
         return new ResponseEntity("invalid email",HttpStatus.BAD_REQUEST);
     }
     @DeleteMapping("/id/{id}")
-    public ResponseEntity<String> delteFeedback(@PathVariable String id){
+    public ResponseEntity<String> deleteFeedback(@PathVariable String id){
         if(feedbackService.deleteFeedback(id) == 0)
             return new ResponseEntity("feedback is deleted",HttpStatus.CREATED);
         else if(feedbackService.deleteFeedback(id) == 1)

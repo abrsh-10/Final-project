@@ -1,14 +1,12 @@
-package et.edu.aau.eaau.assessment.Assignment;
+package et.edu.aau.eaau.assessment.AssignmentSolution;
 
-import et.edu.aau.eaau.assessment.exam.Course;
-import et.edu.aau.eaau.assessment.examSolution.Role;
+import et.edu.aau.eaau.assessment.Assignment.Assignment;
+import et.edu.aau.eaau.assessment.Assignment.AssignmentService;
+import et.edu.aau.eaau.assessment.Assignment.File;
 import et.edu.aau.eaau.assessment.examSolution.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -22,31 +20,20 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class AssignmentService {
+public class AssignmentSolutionService {
     private final RestTemplate restTemplate;
-    public List<Assignment> getAssignments(String course_id){
-        File[] files = restTemplate.getForEntity("http://localhost:8084/file/view-assignments/"+course_id, File[].class).getBody();
+    private final AssignmentService assignmentService;
+
+    public List<AssignmentSolution> getAssignmentSolutions(String assignment_id) {
+        File[] files = restTemplate.getForEntity("http://localhost:8084/file/view-solutions/" + assignment_id, File[].class).getBody();
         assert files != null;
         List<File> fileList = Arrays.stream(files).toList();
-        return fileList.stream().map(this::mapToAssignment).toList();
+        return fileList.stream().map(this::mapToAssignmentSolution).toList();
     }
-    public Assignment getAssignmentById(String id){
-        File file = restTemplate.getForEntity("http://localhost:8084/file/viewfileinformation/"+id, File.class).getBody();
-        if(file == null){
-            return null;
-        }
-        return mapToAssignment(file);
-    }
-    public int addAssignment(MultipartFile file, String uploader, String description, String course_id) throws IOException {
-        ResponseEntity<Course> courseResponseEntity;
-        try {
-            courseResponseEntity = restTemplate.getForEntity("http://localhost:8083/api/course/id/"+ course_id,Course.class);
-        }
-        catch (HttpClientErrorException e) {
-            return 3;
-        }
 
-        if(courseResponseEntity.getBody() == null){
+    public int addAssignmentSolution(MultipartFile file, String uploader, String description, String assignment_id) throws IOException {
+        Assignment assignment = assignmentService.getAssignmentById(assignment_id);
+        if(assignment ==null){
             return 1;
         }
         ResponseEntity<User> userResponseEntity;
@@ -56,11 +43,9 @@ public class AssignmentService {
         catch (HttpClientErrorException e) {
             return 3;
         }
+
         if(userResponseEntity.getBody() == null){
             return 2;
-        }
-        if(!uploader.equals(courseResponseEntity.getBody().getTeacherEmail())){
-            return 4;
         }
         String apiUrl = "http://localhost:8084/file/upload";
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
@@ -72,8 +57,8 @@ public class AssignmentService {
         });
         body.add("uploader", uploader);
         body.add("description", description);
-        body.add("filetype", "assignment");
-        body.add("course_id", course_id);
+        body.add("filetype", "solution");
+        body.add("course_id", assignment_id);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
@@ -81,7 +66,7 @@ public class AssignmentService {
         restTemplate.postForObject(apiUrl, requestEntity, String.class);
         return 0;
     }
-    public boolean deleteAssignment(String id){
+    public boolean deleteAssignmentSolution(String id){
         String apiUrl = "http://localhost:8084/file/delete/";
         try {
             restTemplate.delete(apiUrl + "{id}", id);
@@ -92,13 +77,13 @@ public class AssignmentService {
         return true;
     }
 
-    private Assignment mapToAssignment(File file) {
-        return Assignment.builder()
-                .assignmentId(file.getFileId())
-                .assignmentName(file.getFileName())
-                .assignmentDescription(file.getDescription())
-                .assignmentSize(file.getLength())
-                .courseId(file.getCourse_id())
+    private AssignmentSolution mapToAssignmentSolution(File file) {
+        return AssignmentSolution.builder()
+                .assignmentSolutionId(file.getFileId())
+                .assignmentSolutionName(file.getFileName())
+                .assignmentSolutionDescription(file.getDescription())
+                .assignmentSolutionSize(file.getLength())
+                .assignmentId(file.getCourse_id())
                 .build();
     }
 }

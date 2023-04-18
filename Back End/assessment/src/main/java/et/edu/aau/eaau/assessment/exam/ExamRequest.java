@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 public class ExamRequest {
     private String examName;
     private String CourseId;
+    private String creator;
     private int weight;
     private LocalDateTime startTime;
     private int duration;

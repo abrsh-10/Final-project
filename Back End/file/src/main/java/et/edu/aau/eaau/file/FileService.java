@@ -44,8 +44,14 @@ public class FileService {
         ResponseEntity<Course> responseEntity2;
         try {
              responseEntity1 = restTemplate.getForEntity("http://localhost:8080/api/user/email/"+data.getUploader(),UserResponse.class);
-             responseEntity2 = restTemplate.getForEntity("http://localhost:8083/api/course/id/"+data.getCourse_id(),Course.class);
-             if(responseEntity1.getBody() == null || responseEntity2.getBody() == null){
+             if(data.getFileType() != solution){
+                 responseEntity2 = restTemplate.getForEntity("http://localhost:8083/api/course/id/"+data.getCourse_id(),Course.class);
+                 if(responseEntity2.getBody() == null){
+                     return 1;
+                 }
+             }
+
+             if(responseEntity1.getBody() == null){
                  return 1;
              }
         } catch (HttpClientErrorException e) {
@@ -56,6 +62,11 @@ public class FileService {
             if(((role == Student) && (data.getFileType() == solution)) ||
                     ((role == Teacher) && ((data.getFileType() == assignment) || (data.getFileType() == coursematerial))))
             {
+                if(data.getFileType() == solution){
+                    if(getFileInformation(data.getCourse_id())==null){
+                        return 1;
+                    }
+                }
 
                 DBObject metadata = new BasicDBObject();
                 metadata.put("info", data);
@@ -113,6 +124,16 @@ public class FileService {
             }
         }
         return assignments;
+    }
+    public List<FileInformation> getAllSolutions(String assignment_id){
+        List<FileInformation> fileInformations = fileInformationRepository.findAll();
+        List<FileInformation> solutions = new ArrayList<>();
+        for(FileInformation fileInformation:fileInformations){
+            if(fileInformation.getFileType().equals(solution)&&fileInformation.getCourse_id().equals(assignment_id)){
+                solutions.add(fileInformation);
+            }
+        }
+        return solutions;
     }
     public FileInformation getFileInformation(String id){
         Optional<FileInformation> optionalFileInformation = fileInformationRepository.findById(id);

@@ -35,6 +35,9 @@ public class ExamService {
         if(responseEntity.getBody() == null){
             return 4;
         }
+        if(!examRequest.getCreator().equals(responseEntity.getBody().getTeacherEmail())){
+            return 6;
+        }
         Exam exam = Exam.builder()
                 .examName(examRequest.getExamName())
                 .courseId(examRequest.getCourseId())

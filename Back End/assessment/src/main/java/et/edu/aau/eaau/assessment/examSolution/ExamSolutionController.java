@@ -29,17 +29,23 @@ public class ExamSolutionController {
         }
         return new ResponseEntity<>("exam solution sent", HttpStatus.OK);
     }
-    @GetMapping("course-id/{courseId}")
-    public ResponseEntity<Exam> getExamByCourse(@PathVariable("courseId") String courseId) {
+    @GetMapping("exam-id/{courseId}")
+    public ResponseEntity<Exam> getExamSolutionByExam(@PathVariable("courseId") String courseId) {
         return new ResponseEntity(examSolutionService.getByExamId(courseId), HttpStatus.OK);
     }
     @GetMapping("student-email/{studentEmail}")
-    public ResponseEntity<Exam> getExamByStudent(@PathVariable("studentEmail") String studentEmail) {
+    public ResponseEntity<Exam> getExamSolutionByStudent(@PathVariable("studentEmail") String studentEmail) {
         return new ResponseEntity(examSolutionService.getByStudentEmail(studentEmail), HttpStatus.OK);
     }
-    @GetMapping("course-student/{courseId}/{studentEmail}")
-    public ResponseEntity<Exam> getExamByStudent(@PathVariable("courseId") String courseId,@PathVariable("studentEmail") String studentEmail) {
-        return new ResponseEntity(examSolutionService.getByStudentAndExam(studentEmail,courseId), HttpStatus.OK);
+    @GetMapping("exam-student/{examId}/{studentEmail}")
+    public ResponseEntity<Exam> getExamSolutionByExamAndStudent(@PathVariable("examId") String examId, @PathVariable("studentEmail") String studentEmail) {
+        return new ResponseEntity(examSolutionService.getByStudentAndExam(studentEmail, examId), HttpStatus.OK);
+    }
+    @PutMapping("/mark-seen/{id}")
+    public ResponseEntity<String> markSeen(@PathVariable String id){
+        if(examSolutionService.markSeen(id))
+            return new ResponseEntity("solution is marked as seen",HttpStatus.CREATED);
+        return new ResponseEntity("invalid email",HttpStatus.BAD_REQUEST);
     }
 
 }
