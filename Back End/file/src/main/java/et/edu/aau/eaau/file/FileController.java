@@ -36,15 +36,6 @@ public class FileController {
                     build();
             if(fileService.addFile(file,metaData) == 0)
             return new ResponseEntity<>("file with file name: "+ file.getOriginalFilename() + " is added successfully", HttpStatus.OK);
-            else if (fileService.addFile(file,metaData) == 1 && metaData.getFileType() == Type.solution) {
-                return new ResponseEntity<>("assignment could not be found",HttpStatus.NOT_FOUND);
-            }
-            else if (fileService.addFile(file,metaData) == 1) {
-                return new ResponseEntity<>("either uploader or course could not be found",HttpStatus.NOT_FOUND);
-            } else if (fileService.addFile(file,metaData) == 2) {
-                return new ResponseEntity<>("sorry you cannot upload such type of file because of your role",HttpStatus.BAD_REQUEST);
-            }
-
         }
         else{
             return new ResponseEntity<>("file type must be coursematerial,assignment or solution",HttpStatus.BAD_REQUEST);

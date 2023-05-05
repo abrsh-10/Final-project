@@ -53,7 +53,7 @@ public class UserController {
     @GetMapping("/students/{course_id}")
     public ResponseEntity<List<User>> getStudentsByCourse(@PathVariable("course_id") String course_id) {
         if (userService.getStudentsByCourse(course_id).size()==0) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(null, HttpStatus.OK);
         } else {
             return new ResponseEntity(userService.getStudentsByCourse(course_id), HttpStatus.OK);
         }

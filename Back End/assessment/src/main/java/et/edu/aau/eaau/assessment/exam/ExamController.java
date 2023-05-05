@@ -3,8 +3,11 @@ package et.edu.aau.eaau.assessment.exam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -13,8 +16,10 @@ import java.util.List;
 @RequestMapping("/api/exam")
 @CrossOrigin(origins = "http://localhost:4200/")
 @RequiredArgsConstructor
+@EnableScheduling
 public class ExamController {
     private final ExamService examService;
+    private final ExamRepository examRepository;
     @PostMapping()
     ResponseEntity<String> createExam(@RequestBody ExamRequest examRequest){
            int response =  examService.addExam(examRequest);
@@ -31,16 +36,20 @@ public class ExamController {
             return new ResponseEntity<>("no course id was found matching the course you have choosen", HttpStatus.BAD_REQUEST);
         }
         if(response == 5){
-            return new ResponseEntity<>("sorry could not contact course microservice to check whether course exists or not ", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("sorry could not contact course or user microservice", HttpStatus.INTERNAL_SERVER_ERROR);
         }
         if(response == 6){
             return new ResponseEntity<>("creator is not teacher assigned for the course", HttpStatus.BAD_REQUEST);
+        }
+        if(response == 7){
+            return new ResponseEntity<>("exam", HttpStatus.BAD_REQUEST);
         }
             return new ResponseEntity<>(null, HttpStatus.CREATED);
     }
     @GetMapping()
     public ResponseEntity<List<Exam>> getAllExams() {
             return new ResponseEntity(examService.getAllExams(), HttpStatus.OK);
+
         }
     @GetMapping("id/{id}")
     public ResponseEntity<Exam> getExam(@PathVariable("id") String id) {
@@ -54,6 +63,7 @@ public class ExamController {
     public ResponseEntity<List<Exam>> getQuestionsByOrder(@PathVariable("id") String id) {
         return new ResponseEntity(examService.getQuestionsByOrder(id), HttpStatus.OK);
     }
+
     @PutMapping("add-questions/{id}")
     public ResponseEntity addQuestions(@PathVariable("id") String id, @RequestBody List<QuestionDto> questions) {
         int response = examService.addQuestions(questions,id);
@@ -113,5 +123,16 @@ public class ExamController {
         }
         else
             return new ResponseEntity(null, HttpStatus.NO_CONTENT);
+    }
+    @DeleteMapping("delete/{examId}")
+    public ResponseEntity<String> deleteExam(@PathVariable String examId){
+        if(examService.deleteExam(examId) == 0){
+            return new ResponseEntity<>("exam successfully deleted",HttpStatus.NO_CONTENT);
+        }
+        else if(examService.deleteExam(examId) == 1){
+            return new ResponseEntity<>("exam not found",HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>("exam is currently active ",HttpStatus.NOT_FOUND);
+
     }
 }

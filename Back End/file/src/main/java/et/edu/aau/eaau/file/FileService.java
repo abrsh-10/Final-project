@@ -40,33 +40,6 @@ public class FileService {
     private RestTemplate restTemplate;
 
     public int addFile(MultipartFile upload, MetaData data) throws IOException {
-        ResponseEntity<UserResponse> responseEntity1;
-        ResponseEntity<Course> responseEntity2;
-        try {
-             responseEntity1 = restTemplate.getForEntity("http://localhost:8080/api/user/email/"+data.getUploader(),UserResponse.class);
-             if(data.getFileType() != solution){
-                 responseEntity2 = restTemplate.getForEntity("http://localhost:8083/api/course/id/"+data.getCourse_id(),Course.class);
-                 if(responseEntity2.getBody() == null){
-                     return 1;
-                 }
-             }
-
-             if(responseEntity1.getBody() == null){
-                 return 1;
-             }
-        } catch (HttpClientErrorException e) {
-            return 1;
-        }
-        if(responseEntity1.getStatusCodeValue() == 200){
-            Role role = responseEntity1.getBody().getRole();
-            if(((role == Student) && (data.getFileType() == solution)) ||
-                    ((role == Teacher) && ((data.getFileType() == assignment) || (data.getFileType() == coursematerial))))
-            {
-                if(data.getFileType() == solution){
-                    if(getFileInformation(data.getCourse_id())==null){
-                        return 1;
-                    }
-                }
 
                 DBObject metadata = new BasicDBObject();
                 metadata.put("info", data);
@@ -75,12 +48,6 @@ public class FileService {
                 Object fileID = template.store(upload.getInputStream(), upload.getOriginalFilename(), upload.getContentType(), metadata);
 
                 return 0;
-            }
-            else{
-                return 2;
-            }
-        }
-        return 1;
     }
 
 

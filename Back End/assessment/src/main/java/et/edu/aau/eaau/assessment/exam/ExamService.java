@@ -1,18 +1,26 @@
 package et.edu.aau.eaau.assessment.exam;
 
+import et.edu.aau.eaau.assessment.examSolution.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 @Service
 @RequiredArgsConstructor
 public class ExamService {
     private final ExamRepository examRepository;
+
+    private ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
     private final RestTemplate restTemplate;
 
     public int addExam(ExamRequest examRequest) {
@@ -38,6 +46,29 @@ public class ExamService {
         if(!examRequest.getCreator().equals(responseEntity.getBody().getTeacherEmail())){
             return 6;
         }
+        List<Exam> exams = examRepository.findAllByStartTimeBetween(
+                LocalDateTime.of(LocalDate.now(), LocalTime.MIN),
+                LocalDateTime.of(LocalDate.now(), LocalTime.MAX)
+        );
+        List<User> studentsToBeScheduled;
+        List<User> scheduledStudents = new ArrayList<>();
+        try {
+            String url = "http://localhost:8080/api/user/students/" + courseIdMapper(examRequest.getCourseId());
+            studentsToBeScheduled = Arrays.stream(Objects.requireNonNull(restTemplate.getForObject(url, User[].class))).toList();
+            for(Exam exam:exams){
+                String url2 = "http://localhost:8080/api/user/students/" + courseIdMapper(exam.getCourseId());
+                List<User> students = Arrays.stream(Objects.requireNonNull(restTemplate.getForObject(url2, User[].class))).toList();
+                    scheduledStudents.addAll(students);
+                 }
+            }
+        catch (HttpClientErrorException e) {
+            return 5;
+        }
+        for(User student:studentsToBeScheduled){
+            if(scheduledStudents.contains(student)){
+                return 7;
+            }
+        }
         Exam exam = Exam.builder()
                 .examName(examRequest.getExamName())
                 .courseId(examRequest.getCourseId())
@@ -47,6 +78,17 @@ public class ExamService {
                 .build();
         examRepository.save(exam);
         return 0;
+    }
+
+    private String courseIdMapper(String id) {
+        ResponseEntity<Course> responseEntity;
+        try {
+            responseEntity = restTemplate.getForEntity("http://localhost:8083/api/course/id/" + id, Course.class);
+        }
+        catch (HttpClientErrorException e) {
+            return null;
+        }
+        return Objects.requireNonNull(responseEntity.getBody()).getCourseId();
     }
 
     public List<Exam> getAllExams() {
@@ -172,6 +214,17 @@ public class ExamService {
         }
         return null;
     }
+    public int deleteExam(String id){
+        Exam exam = getExam(id);
+        if(exam != null){
+            if(exam.isActive()){
+                return 2;
+            }
+            examRepository.deleteById(id);
+            return 0;
+        }
+        return 1;
+    }
     private int getNumberOfQuestions(List<Question> questions , QuestionType questionType){
         int num = 0;
         for(Question question:questions){
@@ -180,5 +233,43 @@ public class ExamService {
             }
         }
         return num;
+    }
+    @Scheduled(fixedDelay = 60000)
+    public void activateOrDeactivateExams() {
+        // Get exams scheduled for today
+        LocalDate today = LocalDate.now();
+        List<Exam> exams = examRepository.findAllByStartTimeBetween(
+                LocalDateTime.of(today, LocalTime.MIN),
+                LocalDateTime.of(today, LocalTime.MAX)
+        );
+
+        // If no exams are scheduled for today, delay the next invocation by one day and return
+        if (exams.isEmpty()) {
+            System.out.println("No exams scheduled for today.");
+            long delay = Duration.between(LocalDateTime.now(), LocalDate.now().plusDays(1).atStartOfDay()).toMillis();
+            try {
+                Thread.sleep(delay);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return;
+        }
+
+        // Activate or deactivate the exam based on the current time
+        for (Exam exam : exams) {
+            LocalDateTime endTime = exam.getStartTime().plusMinutes(exam.getDuration());
+            if (LocalDateTime.now().isBefore(exam.getStartTime())) {
+                System.out.println("Exam "+exam.getExamName()+" scheduled for today, but not yet started.");
+                exam.setActive(false);
+            } else if (LocalDateTime.now().isAfter(endTime)) {
+                System.out.println("Exam "+exam.getExamName()+" scheduled for today, but already ended.");
+                exam.setActive(false);
+            } else {
+                exam.setActive(true);
+                System.out.println("Exam "+exam.getExamName()+" is now activated.");
+            }
+            examRepository.save(exam);
+        }
+        System.out.println("Working.");
     }
 }
