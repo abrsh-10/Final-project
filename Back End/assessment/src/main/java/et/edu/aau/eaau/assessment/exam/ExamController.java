@@ -33,7 +33,7 @@ public class ExamController {
             return new ResponseEntity<>("exam duration must be greater than 0", HttpStatus.BAD_REQUEST);
         }
         if(response == 4){
-            return new ResponseEntity<>("no course id was found matching the course you have choosen", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("no course id was found matching the course you have chosen", HttpStatus.BAD_REQUEST);
         }
         if(response == 5){
             return new ResponseEntity<>("sorry could not contact course or user microservice", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -42,7 +42,7 @@ public class ExamController {
             return new ResponseEntity<>("creator is not teacher assigned for the course", HttpStatus.BAD_REQUEST);
         }
         if(response == 7){
-            return new ResponseEntity<>("exam", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("exam cannot be created because a student taking this course have an exam on this day", HttpStatus.BAD_REQUEST);
         }
             return new ResponseEntity<>(null, HttpStatus.CREATED);
     }

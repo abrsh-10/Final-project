@@ -169,11 +169,29 @@ public class UserService {
             }
         }
         List<String> ids = user.getCourses();
-        ids.add(courseId);
+        ids.add(mapToObjectId(courseId,teacherEmail));
         user.setCourses(ids);
         userRepository.save(user);
         return 0;
     }
+
+    private String mapToObjectId(String courseId,String teacherEmail) {
+        ResponseEntity<Course[]> responseEntity;
+        try {
+            responseEntity = restTemplate.getForEntity("http://localhost:8083/api/course/course-id/"+ courseId,Course[].class);
+        }
+        catch (HttpClientErrorException e) {
+            return null;
+        }
+        List<Course> courses = Arrays.stream(Objects.requireNonNull(responseEntity.getBody())).toList();
+        for(Course course:courses){
+            if(course.getTeacherEmail().equals(teacherEmail)){
+                return course.getId();
+            }
+        }
+        return null;
+    }
+
     public int removeCourse(String email, String course_id){
         if (getUser(email) == null) {
             return 1;

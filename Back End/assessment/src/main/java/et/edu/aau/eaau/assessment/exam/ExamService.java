@@ -53,10 +53,10 @@ public class ExamService {
         List<User> studentsToBeScheduled;
         List<User> scheduledStudents = new ArrayList<>();
         try {
-            String url = "http://localhost:8080/api/user/students/" + courseIdMapper(examRequest.getCourseId());
+            String url = "http://localhost:8080/api/user/students/" + examRequest.getCourseId();
             studentsToBeScheduled = Arrays.stream(Objects.requireNonNull(restTemplate.getForObject(url, User[].class))).toList();
             for(Exam exam:exams){
-                String url2 = "http://localhost:8080/api/user/students/" + courseIdMapper(exam.getCourseId());
+                String url2 = "http://localhost:8080/api/user/students/" + exam.getCourseId();
                 List<User> students = Arrays.stream(Objects.requireNonNull(restTemplate.getForObject(url2, User[].class))).toList();
                     scheduledStudents.addAll(students);
                  }
@@ -78,17 +78,6 @@ public class ExamService {
                 .build();
         examRepository.save(exam);
         return 0;
-    }
-
-    private String courseIdMapper(String id) {
-        ResponseEntity<Course> responseEntity;
-        try {
-            responseEntity = restTemplate.getForEntity("http://localhost:8083/api/course/id/" + id, Course.class);
-        }
-        catch (HttpClientErrorException e) {
-            return null;
-        }
-        return Objects.requireNonNull(responseEntity.getBody()).getCourseId();
     }
 
     public List<Exam> getAllExams() {
