@@ -19,5 +19,6 @@ public class Course {
     private String courseName;
     private String courseDescription;
     private String teacherEmail;
+    private String courseImage;
 
 }

@@ -17,11 +17,20 @@ public class CourseService {
     private final CourseMaterialService courseMaterialService;
 
     public void createCourse(CourseRequest courseRequest) {
+        String teacherEmail;
+        if(courseRequest.getTeacherEmail() == null){
+            teacherEmail = "none";
+        }
+        else{
+            teacherEmail = courseRequest.getTeacherEmail();
+        }
+
         Course course = Course.builder()
                 .courseId(courseRequest.getCourseId())
                 .courseName(courseRequest.getCourseName())
                 .courseDescription(courseRequest.getCourseDescription())
-                .teacherEmail("none")
+                .teacherEmail(teacherEmail)
+                .courseImage(courseRequest.getCourseImage())
                 .build();
         courseRepository.save(course);
     }

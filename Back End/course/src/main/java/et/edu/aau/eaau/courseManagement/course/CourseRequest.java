@@ -16,5 +16,7 @@ public class CourseRequest {
     private String courseId;
     private String courseName;
     private String courseDescription;
+    private String teacherEmail;
+    private String courseImage;
 
 }
