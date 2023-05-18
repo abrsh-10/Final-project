@@ -81,7 +81,8 @@ public class ExamService {
     }
 
     public List<Exam> getAllExams() {
-        return examRepository.findAll();
+        List<Exam> exams = examRepository.findAll();
+        return exams;
     }
 
     public Exam getExam(String examId) {
