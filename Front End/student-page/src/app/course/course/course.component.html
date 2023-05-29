@@ -1,0 +1,171 @@
+<nav class="navbar navbar-light bg-light">
+  <div class="container-fluid">
+    <a class="brand">
+      <div class="home-logo col-md-2 col-sm-1" (click)="changeRoute('/')">
+        <img
+          src="assets/images/home-button.png"
+          alt="home logo"
+          width="30"
+          height="24"
+        />
+      </div>
+      <h2 class="col-10">{{ course.courseName }}</h2>
+    </a>
+    <div class="right-side d-none d-lg-flex">
+      <div>
+        <img src="assets/images/aaulogo.png" alt="AAU logo" class="aau-logo" />
+      </div>
+      <div class="slogan">
+        <h2 class="main mt-3"><span>AAU</span> online learning</h2>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="container-fluid">
+  <div class="row">
+    <div *ngIf="showSideBar" class="side-bar col-lg-3 col-12">
+      <div class="hide-button" (click)="toogleSideBar()">&#10005; Hide</div>
+      <div class="side-bar-container">
+        <div
+          [ngClass]="{
+            'side-bar-items': !showCourseMaterial,
+            'side-bar-item-clicked': showCourseMaterial
+          }"
+          (click)="toogleSideBarItems(1)"
+        >
+          Course Materials
+        </div>
+      </div>
+      <div
+        [ngClass]="{
+          'side-bar-items': !showTopic,
+          'side-bar-item-clicked': showTopic
+        }"
+        (click)="toogleSideBarItems(2)"
+      >
+        Topics
+      </div>
+      <div *ngIf="showTopic">
+        <div
+          class="side-bar-sub-items"
+          *ngFor="let topic of topics"
+          (click)="toogleSideBarItems(3, topic)"
+        >
+          <span class="bullet">&#8226;</span> &nbsp;{{ topic.topicTitle }}
+        </div>
+      </div>
+      <div class="side-bar-items">Exams</div>
+      <div class="side-bar-items">Assignments</div>
+    </div>
+    <div
+      *ngIf="!showSideBar"
+      class="showSideBar-Icon col-1"
+      (click)="toogleSideBar()"
+    >
+      ≡
+    </div>
+    <div class="main-content col-lg-8 col-md-12">
+      <section *ngIf="showCourseMaterial">
+        <div class="row">
+          <div class="col-12 mt-3 mb-1">
+            <h5 class="text-uppercase">Course Materials</h5>
+            <p>your course materials for this course are listed below</p>
+          </div>
+        </div>
+        <div class="row">
+          <div
+            class="col-12 mb-4"
+            *ngFor="let courseMaterial of courseMaterials"
+          >
+            <div class="card">
+              <div class="card-body">
+                <div class="d-flex justify-content-between p-md-1">
+                  <div class="d-flex flex-row">
+                    <div class="align-self-top">
+                      <i class="fa fa-book fa-lg me-4"></i>
+                    </div>
+                    <div>
+                      <h4 class="truncate">
+                        {{ courseMaterial.courseMaterialName }}
+                      </h4>
+                      <p
+                        class="courseMaterial-description text-muted"
+                        style="white-space: pre-wrap"
+                      >
+                        <span class="bullet">&#8226;</span>
+                        {{ courseMaterial.courseMaterialDescription }}
+                      </p>
+                      <p class="mb-0">
+                        {{
+                          courseMaterial.courseMaterialSize / 1048576
+                            | number : "1.2-2"
+                        }}
+                        MB
+                      </p>
+                    </div>
+                  </div>
+                  <div class="align-self-center me-1">
+                    <button
+                      class="btn btn-outline-dark mb-0"
+                      (click)="
+                        downloadFile(
+                          courseMaterial.courseMaterialId,
+                          courseMaterial.courseMaterialName
+                        )
+                      "
+                    >
+                      download
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section *ngIf="showLesson">
+        <div class="row">
+          <div class="col-12 mt-3 mb-1">
+            <h5 class="text-uppercase">
+              Lessons for Topic: <b>{{ topicTitle }}</b>
+            </h5>
+            <p class="text-muted">Description: {{ topicDescription }}</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12 mb-4" *ngFor="let lesson of lessons">
+            <div class="card">
+              <div class="card-body">
+                <div class="d-flex justify-content-between p-md-1">
+                  <div class="d-flex flex-row">
+                    <div class="align-self-center me-2">
+                      <i class="material-icons">video_library</i>
+                    </div>
+                    <div>
+                      <h4 class="truncate">
+                        {{ lesson.lessonTitle }}
+                      </h4>
+                      <p
+                        class="courseMaterial-description text-muted"
+                        style="white-space: pre-wrap"
+                      >
+                        <span class="bullet">&#8226;</span>
+                        {{ lesson.lessonDescription }}
+                      </p>
+                    </div>
+                  </div>
+                  <div class="align-self-center me-1">
+                    <button class="btn btn-outline-dark mb-0">
+                      view lesson
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>

@@ -17,7 +17,7 @@ import java.util.List;
 public class ExamSolution {
     @Id
     private String solutionId;
-    private List<String> answers;
+    private List<Answer> answers;
     private String examId;
     private String studentEmail;
     private boolean isSeen;

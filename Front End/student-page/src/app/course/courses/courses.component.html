@@ -1,0 +1,43 @@
+<app-navbar></app-navbar>
+<div class="content mt-4">
+  <div class="container">
+    <div class="row">
+      <div
+        *ngFor="let course of courses"
+        class="col-sm-12 col-md-6 col-lg-4 mb-5"
+      >
+        <div class="card">
+          <div class="img-card">
+            <img src="{{ course.courseImage }}" />
+          </div>
+          <div class="card-content">
+            <h4 class="card-title">
+              <div class="course-name">
+                {{ course.courseName }}
+                <span class="course-id text-muted"
+                  >&#8226;({{ course.courseId }})</span
+                >
+              </div>
+            </h4>
+            <p class="text-muted">
+              <span class="bullet">&#8226;</span>
+              {{ course.courseDescription }}
+            </p>
+            <p class="">
+              <span class="bullet">&#8226;</span>
+              Instructor Address:
+              <span class="teacher">{{ course.teacherEmail }}</span>
+            </p>
+          </div>
+          <div
+            class="card-read-more d-flex justify-content-center align-items-center"
+          >
+            <button class="btn btn-block" (click)="onSelectCourse(course.id)">
+              see details
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

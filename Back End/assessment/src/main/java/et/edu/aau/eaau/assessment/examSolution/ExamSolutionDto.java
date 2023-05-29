@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class ExamSolutionDto {
-    private List<String> answers;
+    private List<Answer> answers;
     private String examId;
     private String studentEmail;
 

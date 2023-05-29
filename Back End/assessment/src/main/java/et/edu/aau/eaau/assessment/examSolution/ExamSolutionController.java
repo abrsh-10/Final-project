@@ -27,11 +27,14 @@ public class ExamSolutionController {
         else if (response == 4) {
             return new ResponseEntity<>("student not registered for the course specified", HttpStatus.BAD_REQUEST);
         }
+        else if (response == 5) {
+            return new ResponseEntity<>("this student have already submitted a solution for the examSolution specified", HttpStatus.BAD_REQUEST);
+        }
         return new ResponseEntity<>("exam solution sent", HttpStatus.OK);
     }
-    @GetMapping("exam-id/{courseId}")
-    public ResponseEntity<Exam> getExamSolutionByExam(@PathVariable("courseId") String courseId) {
-        return new ResponseEntity(examSolutionService.getByExamId(courseId), HttpStatus.OK);
+    @GetMapping("exam-id/{examId}")
+    public ResponseEntity<Exam> getExamSolutionByExam(@PathVariable("examId") String examId) {
+        return new ResponseEntity(examSolutionService.getByExamId(examId), HttpStatus.OK);
     }
     @GetMapping("student-email/{studentEmail}")
     public ResponseEntity<Exam> getExamSolutionByStudent(@PathVariable("studentEmail") String studentEmail) {

@@ -1,0 +1,38 @@
+.navigationBar{
+    background-color: maroon;
+    color: white;
+    padding-bottom: 40px;
+}
+a{
+    color: white;
+    text-transform: capitalize;
+}
+li a:hover {
+    background-color: lightgrey;
+    border-radius: 50px;
+    color: maroon;
+}
+ul{
+    margin-right: 50px;
+}
+.left-side{
+    display: flex;
+    margin-left: 5px;
+}
+.aau-logo{
+    width: 100px;
+    height: 100px;
+    margin-right: 10px;
+}
+.slogan{
+    display: flex;
+    flex-direction: column;
+}
+.main{
+    color: white;
+    font-size: xx-large;
+}
+.secondary {
+    color: black;
+    font-size:large;
+}

@@ -38,13 +38,20 @@ public class ExamSolutionService {
         }
         try {
             courseResponseEntity = restTemplate.getForEntity("http://localhost:8083/api/course/id/"+ exam.getCourseId(),Course.class);
+            System.out.println(exam.getCourseId());
         }
         catch (HttpClientErrorException e) {
             return 3;
         }
-List<String> ids = userResponseEntity.getBody().getCourses();
-        if(!ids.contains(courseResponseEntity.getBody().getCourseId())){
+        List<String> ids = userResponseEntity.getBody().getCourses();
+        if(!ids.contains(courseResponseEntity.getBody().getId())){
             return 4;
+        }
+        List<ExamSolution> existingSolutions = getByExamId(examSolutionDto.getExamId());
+        for(ExamSolution examSolution:existingSolutions){
+            if(examSolution.getStudentEmail().equals(examSolutionDto.getStudentEmail())){
+                return 5;
+            }
         }
         ExamSolution examSolution = ExamSolution.builder()
                 .answers(examSolutionDto.getAnswers())
@@ -65,16 +72,16 @@ List<String> ids = userResponseEntity.getBody().getCourses();
         return optionalExam.orElse(null);
     }
     public List<ExamSolution> getByStudentAndExam(String studentEmail, String examId){
-         List<ExamSolution> examSolutions = getByStudentEmail(studentEmail);
-         if(examSolutions.size() == 0){
-             return null;
-         }
-         List<ExamSolution> filteredExamSolutions = new ArrayList<>();
+        List<ExamSolution> examSolutions = getByStudentEmail(studentEmail);
+        if(examSolutions.size() == 0){
+            return null;
+        }
+        List<ExamSolution> filteredExamSolutions = new ArrayList<>();
         for(ExamSolution examSolution:examSolutions){
-             if(examSolution.getExamId() == examId){
-                 filteredExamSolutions.add(examSolution);
-             }
-         }
+            if(examSolution.getExamId() == examId){
+                filteredExamSolutions.add(examSolution);
+            }
+        }
         return filteredExamSolutions;
     }
     public Boolean markSeen(String id){

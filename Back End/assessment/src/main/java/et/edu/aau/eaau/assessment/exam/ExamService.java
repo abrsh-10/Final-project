@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -82,16 +83,27 @@ public class ExamService {
 
     public List<Exam> getAllExams() {
         List<Exam> exams = examRepository.findAll();
+        exams.forEach(exam -> exam.setQuestions(null));
         return exams;
     }
 
     public Exam getExam(String examId) {
         Optional<Exam> optionalExam = examRepository.findById(examId);
-        return optionalExam.orElse(null);
+        if(optionalExam.isPresent()){
+            Exam exam = optionalExam.get();
+            exam.setQuestions(null);
+            return exam;
+        }
+        return null;
     }
     public List<Exam> getExamByCourse(String courseId) {
-        Optional<List<Exam>> optionalExam = examRepository.findByCourseId(courseId);
-        return optionalExam.orElse(null);
+        Optional<List<Exam>> optionalExams = examRepository.findByCourseId(courseId);
+        if(optionalExams.isPresent()){
+            List<Exam> exams = optionalExams.get();
+            exams.forEach(exam -> exam.setQuestions(null));
+            return exams;
+        }
+        return null;
     }
     public int addQuestions(List<QuestionDto> questionDtos, String examId) {
         Optional<Exam> optionalExam = examRepository.findById(examId);
@@ -199,8 +211,19 @@ public class ExamService {
         if (optionalExam.isPresent()) {
             Exam exam = optionalExam.get();
             List<Question> questions = exam.getQuestions();
-            questions.sort(Comparator.comparing(question -> question.getQuestionType()));
-            return questions;
+
+            // Shuffle the questions within each question type
+            Map<QuestionType, List<Question>> questionTypeMap = questions.stream()
+                    .collect(Collectors.groupingBy(Question::getQuestionType));
+            questionTypeMap.forEach((questionType, questionList) -> Collections.shuffle(questionList));
+
+            // Sort the question type groups by question type
+            List<Question> shuffledQuestions = questionTypeMap.entrySet().stream()
+                    .sorted(Comparator.comparing(entry -> entry.getKey()))
+                    .flatMap(entry -> entry.getValue().stream())
+                    .collect(Collectors.toList());
+
+            return shuffledQuestions;
         }
         return null;
     }
