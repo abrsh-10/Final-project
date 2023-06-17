@@ -59,6 +59,16 @@ public class LessonService {
         }
         return false;
     }
+    public boolean changeVideoId(String lessonId, String newVideoId){
+        Optional<Lesson> optionalTopic = lessonRepository.findById(lessonId);
+        if(optionalTopic.isPresent()){
+            Lesson lesson = optionalTopic.get();
+            lesson.setLessonVideoId(newVideoId);
+            lessonRepository.save(lesson);
+            return true;
+        }
+        return false;
+    }
     public boolean deleteLesson(String lessonId){
         Optional<Lesson> optionalLesson = lessonRepository.findById(lessonId);
         if(optionalLesson.isPresent()){

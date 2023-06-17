@@ -13,6 +13,7 @@ public class AssignmentSolution {
     private String assignmentSolutionId;
     private String assignmentSolutionName;
     private int assignmentSolutionSize;
+    private String uploader;
     private String assignmentSolutionDescription;
     private String assignmentId;
 

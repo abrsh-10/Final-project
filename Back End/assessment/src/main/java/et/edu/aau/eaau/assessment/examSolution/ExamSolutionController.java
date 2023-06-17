@@ -28,7 +28,7 @@ public class ExamSolutionController {
             return new ResponseEntity<>("student not registered for the course specified", HttpStatus.BAD_REQUEST);
         }
         else if (response == 5) {
-            return new ResponseEntity<>("this student have already submitted a solution for the examSolution specified", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("this student have already submitted a solution for the exam specified", HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>("exam solution sent", HttpStatus.OK);
     }

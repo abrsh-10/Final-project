@@ -1,12 +1,23 @@
 package et.edu.aau.eaau.user.userAccount;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.net.URI;
+import java.security.GeneralSecurityException;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -17,18 +28,46 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+     String loginToken;
 
-    @PostMapping()
-    ResponseEntity createUser(@RequestBody UserRequest user) {
-        if (userService.getUser(user.getEmail()) == null) {
-            userService.createUser(user);
-            return new ResponseEntity<>(null, HttpStatus.CREATED);
-        } else {
-            log.info("unable to create new user because email already exists");
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+    @PostMapping(value = "/login", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public ResponseEntity<?> login(@RequestParam MultiValueMap<String, String> id_token) {
+        // Verify the ID token with Google
+        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
+                .setAudience(Collections.singletonList("159479957223-qka39ssrtraeilbuhv0a5r07sn43oemq.apps.googleusercontent.com"))
+                .build();
+        GoogleIdToken idToken;
+        try {
+            idToken = verifier.verify(id_token.getFirst("credential"));
+        } catch (GeneralSecurityException | IOException e) {
+            // Handle the exception
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-    }
+        if (idToken == null) {
+            // Invalid ID token
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
 
+        // Get the user's email from the ID token
+        String email = idToken.getPayload().getEmail();
+       User user = userService.getUser(email);
+       if(user == null || !user.getIsAllowed()){
+           return ResponseEntity.status(HttpStatus.FOUND)
+                   .location(URI.create("http://localhost:4200/error/"))
+                   .build();
+       }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.LOCATION, "http://localhost:4200/courses/" + email);
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .headers(headers)
+                .build();
+    }
+    @PostMapping()
+    public ResponseEntity<?> addUser(@RequestBody UserRequest user){
+        userService.createUser(user);
+        return new ResponseEntity<>("user added",HttpStatus.CREATED);
+    }
     @GetMapping()
     public ResponseEntity<List<User>> getAllUsers() {
         if (userService.getAllUsers() == null) {

@@ -39,7 +39,7 @@ public class CourseMaterialService {
         }
         ResponseEntity<User> userResponseEntity;
         try {
-            userResponseEntity = restTemplate.getForEntity("http://localhost:8080/api/user/email/"+ uploader,User.class);
+            userResponseEntity = restTemplate.getForEntity("http://localhost:8086/api/user/email/"+ uploader,User.class);
         }
         catch (HttpClientErrorException e) {
             return 3;

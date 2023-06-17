@@ -2,16 +2,12 @@ package et.edu.aau.eaau.assessment.AssignmentSolution;
 
 import et.edu.aau.eaau.assessment.Assignment.Assignment;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 @RestController
@@ -24,11 +20,15 @@ public class AssignmentSolutionController {
     public ResponseEntity<List<Assignment>> getAssignmentSolutions(@PathVariable String assignmentId){
             return new ResponseEntity(assignmentSolutionService.getAssignmentSolutions(assignmentId), HttpStatus.OK);
     }
+    @GetMapping("uploader/{uploader}")
+    public ResponseEntity<List<Assignment>> getAssignmentSolutionsByUploader(@PathVariable String uploader){
+        return new ResponseEntity(assignmentSolutionService.getAssignmentSolutionsByUploader(uploader), HttpStatus.OK);
+    }
     @PostMapping()
     public ResponseEntity<String> addAssignmentSolution(@RequestParam("file") MultipartFile file,
                                     @RequestParam("uploader") String uploader,
                                     @RequestParam("description") String description,
-                                    @RequestParam("course_id") String assignment_id) throws IOException {
+                                    @RequestParam("assignment_id") String assignment_id) throws IOException {
         int response = assignmentSolutionService.addAssignmentSolution(file,uploader,description,assignment_id);
     if( response== 1){
         return new ResponseEntity<>("assignment doesn't exist",HttpStatus.NOT_FOUND);

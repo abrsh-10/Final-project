@@ -38,7 +38,6 @@ public class ExamSolutionService {
         }
         try {
             courseResponseEntity = restTemplate.getForEntity("http://localhost:8083/api/course/id/"+ exam.getCourseId(),Course.class);
-            System.out.println(exam.getCourseId());
         }
         catch (HttpClientErrorException e) {
             return 3;

@@ -10,7 +10,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:4200")
-@RequestMapping("api/lessons")
+@RequestMapping("api/lesson")
 public class LessonController {
     private final LessonService lessonService;
     @GetMapping("topic-id/{topicId}")
@@ -39,6 +39,15 @@ public class LessonController {
     @PutMapping("lesson-description/{lessonId}")
     public ResponseEntity changeTopicDescription(@PathVariable("lessonId") String lessonId,@RequestBody String newDescription) {
         boolean isChanged = lessonService.changeDescription(lessonId,newDescription);
+        if(!isChanged){
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+        else
+            return new ResponseEntity(null, HttpStatus.NO_CONTENT);
+    }
+    @PutMapping("lesson-videoId/{lessonId}")
+    public ResponseEntity changeLessonVideoId(@PathVariable("lessonId") String lessonId,@RequestBody String newVideoId) {
+        boolean isChanged = lessonService.changeVideoId(lessonId,newVideoId);
         if(!isChanged){
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }

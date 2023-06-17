@@ -20,7 +20,6 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final RestTemplate restTemplate;
-
     public void createUser(UserRequest userRequest) {
         User user = User.builder().
                 firstName(userRequest.getFirstName()).

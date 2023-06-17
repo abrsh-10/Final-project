@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +31,20 @@ public class AssignmentSolutionService {
         List<File> fileList = Arrays.stream(files).toList();
         return fileList.stream().map(this::mapToAssignmentSolution).toList();
     }
+    public List<AssignmentSolution> getAssignmentSolutionsByUploader(String uploader) {
+        File[] files = restTemplate.getForEntity("http://localhost:8084/file/viewfileinformation", File[].class).getBody();
+        assert files != null;
+        List<File> fileList = Arrays.stream(files).toList();
+        List<File> filteredList = fileList.stream()
+                .filter(file -> file.getFileType().equals("solution"))
+                .toList();
+        System.out.println(filteredList);
+        filteredList = filteredList.stream()
+                .filter(file -> file.getUploader().equals(uploader))
+                .toList();
+        System.out.println(filteredList);
+        return filteredList.stream().map(this::mapToAssignmentSolution).toList();
+    }
 
     public int addAssignmentSolution(MultipartFile file, String uploader, String description, String assignment_id) throws IOException {
         Assignment assignment = assignmentService.getAssignmentById(assignment_id);
@@ -38,7 +53,7 @@ public class AssignmentSolutionService {
         }
         ResponseEntity<User> userResponseEntity;
         try {
-            userResponseEntity = restTemplate.getForEntity("http://localhost:8080/api/user/email/"+ uploader,User.class);
+            userResponseEntity = restTemplate.getForEntity("http://localhost:8086/api/user/email/"+ uploader,User.class);
         }
         catch (HttpClientErrorException e) {
             return 3;
@@ -81,6 +96,7 @@ public class AssignmentSolutionService {
         return AssignmentSolution.builder()
                 .assignmentSolutionId(file.getFileId())
                 .assignmentSolutionName(file.getFileName())
+                .uploader(file.getUploader())
                 .assignmentSolutionDescription(file.getDescription())
                 .assignmentSolutionSize(file.getLength())
                 .assignmentId(file.getCourse_id())

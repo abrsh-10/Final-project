@@ -14,6 +14,7 @@ public class File {
     private String fileId;
 
     private String fileName;
+    private String fileType;
 
     private int length;
 
