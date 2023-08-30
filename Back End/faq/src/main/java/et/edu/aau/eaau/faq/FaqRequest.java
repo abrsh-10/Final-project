@@ -11,4 +11,5 @@ import lombok.NoArgsConstructor;
 public class FaqRequest {
     String question;
     String answer;
+    Role role;
 }

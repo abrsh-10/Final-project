@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@CrossOrigin("*")
+@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201","http://localhost:4202"})
 @RequestMapping("file")
 public class FileController {
 

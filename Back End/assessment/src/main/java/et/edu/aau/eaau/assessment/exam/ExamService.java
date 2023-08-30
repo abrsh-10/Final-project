@@ -48,21 +48,21 @@ public class ExamService {
             return 6;
         }
         List<Exam> exams = examRepository.findAllByStartTimeBetween(
-                LocalDateTime.of(LocalDate.now(), LocalTime.MIN),
-                LocalDateTime.of(LocalDate.now(), LocalTime.MAX)
+                LocalDateTime.of(examRequest.getStartTime().toLocalDate(), LocalTime.MIN),
+                LocalDateTime.of(examRequest.getStartTime().toLocalDate(), LocalTime.MAX)
         );
         List<User> studentsToBeScheduled;
         List<User> scheduledStudents = new ArrayList<>();
         try {
-            String url = "http://localhost:8080/api/user/students/" + examRequest.getCourseId();
+            String url = "http://localhost:8086/api/user/students/" + examRequest.getCourseId();
             studentsToBeScheduled = Arrays.stream(Objects.requireNonNull(restTemplate.getForObject(url, User[].class))).toList();
             for(Exam exam:exams){
-                String url2 = "http://localhost:8080/api/user/students/" + exam.getCourseId();
+                String url2 = "http://localhost:8086/api/user/students/" + exam.getCourseId();
                 List<User> students = Arrays.stream(Objects.requireNonNull(restTemplate.getForObject(url2, User[].class))).toList();
                     scheduledStudents.addAll(students);
                  }
             }
-        catch (HttpClientErrorException e) {
+        catch (HttpClientErrorException | NullPointerException e) {
             return 5;
         }
         for(User student:studentsToBeScheduled){
@@ -159,6 +159,11 @@ public class ExamService {
                 return 2;
             }
             questionList.remove(index);
+            for(int i=0;i<questionList.size();i++){
+                if(questionList.get(i).getQuestionType().equals(questionType) && questionList.get(i).getQuestionNumber() >questionNum){
+                    questionList.get(i).setQuestionNumber(questionList.get(i).getQuestionNumber()-1);
+                }
+            }
             examRepository.save(exam);
             return 0;
         }
@@ -226,6 +231,17 @@ public class ExamService {
             return shuffledQuestions;
         }
         return null;
+    }
+    public List<Question> getQuestionsForTeacher(String examId) {
+        Optional<Exam> optionalExam = examRepository.findById(examId);
+        if (optionalExam.isPresent()) {
+            Exam exam = optionalExam.get();
+            List<Question> questions = exam.getQuestions();
+            return questions;
+        }
+        else{
+            return null;
+        }
     }
     public int deleteExam(String id){
         Exam exam = getExam(id);

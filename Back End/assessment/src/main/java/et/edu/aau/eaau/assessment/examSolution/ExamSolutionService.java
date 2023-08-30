@@ -9,9 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +26,7 @@ public class ExamSolutionService {
         ResponseEntity<User> userResponseEntity;
         ResponseEntity<Course> courseResponseEntity;
         try {
-            userResponseEntity = restTemplate.getForEntity("http://localhost:8080/api/user/email/"+ examSolutionDto.getStudentEmail(),User.class);
+            userResponseEntity = restTemplate.getForEntity("http://localhost:8086/api/user/email/"+ examSolutionDto.getStudentEmail(),User.class);
         }
         catch (HttpClientErrorException e) {
             return 3;
@@ -70,18 +69,23 @@ public class ExamSolutionService {
         Optional<List<ExamSolution>> optionalExam = examSolutionRepository.findByStudentEmail(studentEmail);
         return optionalExam.orElse(null);
     }
-    public List<ExamSolution> getByStudentAndExam(String studentEmail, String examId){
+    public ExamSolution getByStudentAndExam(String studentEmail, String examId){
         List<ExamSolution> examSolutions = getByStudentEmail(studentEmail);
         if(examSolutions.size() == 0){
             return null;
         }
-        List<ExamSolution> filteredExamSolutions = new ArrayList<>();
+        List<Answer> orderedAnswers = new ArrayList<>();
         for(ExamSolution examSolution:examSolutions){
-            if(examSolution.getExamId() == examId){
-                filteredExamSolutions.add(examSolution);
+            if(Objects.equals(examSolution.getExamId(), examId)){
+               orderedAnswers =  examSolution.getAnswers().stream()
+                        .sorted(Comparator.comparing(Answer::getQuestionType)
+                                .thenComparing(Answer::getQuestionNumber))
+                        .collect(Collectors.toList());
+               examSolution.setAnswers(orderedAnswers);
+               return examSolution;
             }
         }
-        return filteredExamSolutions;
+        return null;
     }
     public Boolean markSeen(String id){
         Optional<ExamSolution> optionalExamSolution = examSolutionRepository.findById(id);

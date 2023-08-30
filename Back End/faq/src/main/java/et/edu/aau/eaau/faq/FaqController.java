@@ -9,7 +9,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201","http://localhost:4202"})
 @RequestMapping("/api/faq")
 public class FaqController {
     private final FaqService faqService;
@@ -22,10 +22,13 @@ public class FaqController {
     public ResponseEntity<List<FaqResponse>> getAllFaqs(){
             return new ResponseEntity<>(faqService.getAllFaqs(), HttpStatus.OK);
     }
+    @GetMapping("/role/{role}")
+    public ResponseEntity<List<FaqResponse>> getAllFaqs(@PathVariable Role role){
+        return new ResponseEntity<>(faqService.getFaqByRole(role), HttpStatus.OK);
+    }
     @PutMapping("/id/{id}")
-    public ResponseEntity editFaq(@PathVariable String id ,@RequestBody String message){
-        FaqEdit faqEdit = new FaqEdit(id,message);
-        boolean isEdited = faqService.editFaq(faqEdit);
+    public ResponseEntity editFaq(@PathVariable String id ,@RequestBody String answer){
+        boolean isEdited = faqService.editFaq(id,answer);
         if(isEdited)
          return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);

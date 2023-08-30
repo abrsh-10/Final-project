@@ -73,6 +73,21 @@ public class CourseService {
             return null;
         }
     }
+    public List<Course> getCourseByTeacherEmail(String email) {
+        List<Course> courses = getAllCourses();
+        List<Course> coursesGivenByTeacher = new ArrayList<>();
+        if (courses.size()>0) {
+            courses.forEach(course -> {
+                if(course.getTeacherEmail().equals(email)){
+                    coursesGivenByTeacher.add(course);
+                }
+            });
+
+            return coursesGivenByTeacher;
+        } else {
+            return null;
+        }
+    }
     public CourseDto getCourseWithFullInformation(String id) {
         Optional<Course> optionalCourse = courseRepository.findById(id);
         if (optionalCourse.isPresent()) {

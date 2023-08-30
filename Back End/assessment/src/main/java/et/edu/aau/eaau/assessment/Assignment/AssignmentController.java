@@ -7,11 +7,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/assignment")
-@CrossOrigin(origins = "http://localhost:4200/")
+@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201","http://localhost:4202"})
 @RequiredArgsConstructor
 public class AssignmentController {
     private final AssignmentService assignmentService;
@@ -20,27 +22,33 @@ public class AssignmentController {
             return new ResponseEntity(assignmentService.getAssignments(courseId), HttpStatus.OK);
     }
     @PostMapping()
-    public ResponseEntity<String> addAssignmentSolution(@RequestParam("file") MultipartFile file,
+    public ResponseEntity<Map<String,Object>> addAssignment(@RequestParam("file") MultipartFile file,
                                                         @RequestParam("uploader") String uploader,
                                                         @RequestParam("description") String description,
                                                         @RequestParam("course_id") String course_id) throws IOException {
+        Map<String,Object> res = new HashMap<>();
         int response = assignmentService.addAssignment(file,uploader,description, course_id);
         if( response== 1){
-            return new ResponseEntity<>("course doesn't exist",HttpStatus.OK);
+            res.put("message","course doesn't exist");
+            return new ResponseEntity<>(res,HttpStatus.BAD_REQUEST);
         }
         else if(response== 2){
-            return new ResponseEntity<>("uploader is not valid",HttpStatus.OK);
+            res.put("message","uploader is not valid");
+            return new ResponseEntity<>(res,HttpStatus.BAD_REQUEST);
         }
         else if(response == 3){
-            return new ResponseEntity<>("something is wrong with user or course micro service",HttpStatus.OK);
+            res.put("message","something is wrong with user or course micro service");
+            return new ResponseEntity<>(res,HttpStatus.BAD_REQUEST);
         }
         else if(response == 4){
-            return new ResponseEntity<>("this user is not a teacher assigned to the course specified",HttpStatus.OK);
+            res.put("message","this user is not a teacher assigned to the course specified");
+            return new ResponseEntity<>(res,HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>("assignment uploaded",HttpStatus.OK);
+        res.put("message","assignment successfully added");
+        return new ResponseEntity<>(res,HttpStatus.OK);
     }
     @DeleteMapping("delete/{assignmentId}")
-    public ResponseEntity<String> deleteAssignmentSolution(@PathVariable String assignmentId){
+    public ResponseEntity<String> deleteAssignment(@PathVariable String assignmentId){
         if(assignmentService.deleteAssignment(assignmentId)){
             return new ResponseEntity<>("assignment deleted",HttpStatus.NO_CONTENT);
         }

@@ -48,6 +48,7 @@ public class CourseMaterialService {
             return 2;
         }
         if(!uploader.equals(optionalCourse.get().getTeacherEmail())){
+            System.out.println(optionalCourse.get().getTeacherEmail());
             return 4;
         }
         String apiUrl = "http://localhost:8084/file/upload";

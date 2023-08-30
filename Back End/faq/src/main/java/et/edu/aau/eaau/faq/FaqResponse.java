@@ -15,4 +15,5 @@ public class FaqResponse {
     String Id;
     String question;
     String answer;
+    Role role;
 }

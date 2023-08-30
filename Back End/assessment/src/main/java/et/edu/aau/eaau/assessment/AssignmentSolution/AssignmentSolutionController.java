@@ -8,11 +8,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/assignment-solution")
-@CrossOrigin(origins = "http://localhost:4200/")
+@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201","http://localhost:4202"})
 @RequiredArgsConstructor
 public class AssignmentSolutionController {
     private final AssignmentSolutionService assignmentSolutionService;
@@ -25,7 +27,7 @@ public class AssignmentSolutionController {
         return new ResponseEntity(assignmentSolutionService.getAssignmentSolutionsByUploader(uploader), HttpStatus.OK);
     }
     @PostMapping()
-    public ResponseEntity<String> addAssignmentSolution(@RequestParam("file") MultipartFile file,
+    public ResponseEntity<?> addAssignmentSolution(@RequestParam("file") MultipartFile file,
                                     @RequestParam("uploader") String uploader,
                                     @RequestParam("description") String description,
                                     @RequestParam("assignment_id") String assignment_id) throws IOException {
@@ -39,7 +41,9 @@ public class AssignmentSolutionController {
     else if(response == 3){
         return new ResponseEntity<>("something is wrong with user micro service",HttpStatus.INTERNAL_SERVER_ERROR);
     }
-        return new ResponseEntity<>("assignment solution sent",HttpStatus.OK);
+    Map<String,Object> res = new HashMap<>();
+    res.put("message","assignment solution saved");
+        return new ResponseEntity<>(res,HttpStatus.OK);
     }
     @DeleteMapping("delete/{assignmentId}")
     public ResponseEntity<String> deleteAssignmentSolution(@PathVariable String assignmentId){

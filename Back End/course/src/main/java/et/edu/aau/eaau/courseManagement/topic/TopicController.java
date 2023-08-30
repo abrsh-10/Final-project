@@ -10,7 +10,8 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/topic")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201"})
+
 public class TopicController {
     private final TopicService topicService;
     @GetMapping("id/{courseId}")

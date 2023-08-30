@@ -17,7 +17,9 @@ public class FaqService {
     public void CreateFaq(FaqRequest faqRequest){
         Faq faq = Faq.builder().
                 question(faqRequest.getQuestion()).
-                answer(faqRequest.getAnswer()).build();
+                answer(faqRequest.getAnswer()).
+                role(faqRequest.getRole()).
+                build();
         faqRepository.save(faq);
     }
     public List<FaqResponse> getAllFaqs(){
@@ -27,11 +29,18 @@ public class FaqService {
         }
         return faqs.stream().map(this::mapToFaqResponse).toList();
     }
-    public boolean editFaq(FaqEdit faqEdit){
-        Optional<Faq> optionalFaq = faqRepository.findFaqsById(faqEdit.getId());
+    public List<FaqResponse> getFaqByRole(Role role){
+        Optional<List<Faq>> faqs = faqRepository.findByRole(role);
+        if(faqs.isPresent()){
+            return faqs.get().stream().map(this::mapToFaqResponse).toList();
+        }
+        return null;
+    }
+    public boolean editFaq(String id,String answer){
+        Optional<Faq> optionalFaq = faqRepository.findFaqsById(id);
         if(optionalFaq.isPresent()) {
             Faq faq = optionalFaq.get();
-            faq.setAnswer(faqEdit.getAnswer());
+            faq.setAnswer(answer);
             faqRepository.save(faq);
             return true;
         }
@@ -47,6 +56,6 @@ public class FaqService {
     }
 
     private FaqResponse mapToFaqResponse(Faq faq) {
-        return FaqResponse.builder().answer(faq.getAnswer()).question(faq.getQuestion()).Id(faq.getId()).build();
+        return FaqResponse.builder().answer(faq.getAnswer()).question(faq.getQuestion()).Id(faq.getId()).role(faq.getRole()).build();
     }
 }

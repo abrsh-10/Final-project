@@ -9,7 +9,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/course")
-@CrossOrigin(origins = "http://localhost:4200/")
+@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201"})
 @RequiredArgsConstructor
 public class CourseController {
     private final CourseService courseService;
@@ -26,7 +26,15 @@ public class CourseController {
         if (courseService.getAllCourses() == null) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         } else {
-            return new ResponseEntity(courseService.getAllCourses(), HttpStatus.OK);
+            return new ResponseEntity<>(courseService.getAllCourses(), HttpStatus.OK);
+        }
+    }
+    @GetMapping("/teacher/{email}")
+    public ResponseEntity<List<Course>> getCourseByTeacher(@PathVariable String email) {
+        if (courseService.getCourseByTeacherEmail(email) == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<>(courseService.getCourseByTeacherEmail(email), HttpStatus.OK);
         }
     }
     @GetMapping("/course-with-full-information")
